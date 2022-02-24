@@ -5,11 +5,13 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Ingredient {
 
@@ -19,4 +21,7 @@ public class Ingredient {
     private String name;
     private Integer number;
     private Integer price;
+
+    @OneToMany(mappedBy="cocktail")
+    private List<CocktailIngredient> cocktail;
 }

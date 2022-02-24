@@ -6,10 +6,10 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Purchase {
 
@@ -18,7 +18,9 @@ public class Purchase {
     private Long id;
     private Integer amount;
     private LocalDateTime time;
-    private String method;
+
+    @Enumerated(EnumType.STRING)
+    private PurchaseMethod method;
 
     @ManyToOne
     @JoinColumn(name = "cocktail_type")

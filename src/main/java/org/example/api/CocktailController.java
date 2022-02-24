@@ -1,6 +1,5 @@
 package org.example.api;
 
-import lombok.RequiredArgsConstructor;
 import org.example.core.cocktail.domain.Cocktail;
 import org.example.core.cocktail.domain.Ingredient;
 import org.example.core.cocktail.domain.Purchase;
@@ -35,8 +34,8 @@ public class CocktailController {
     }
 
     @PostMapping("/purchase")
-    public void purchase(@RequestBody Purchase purchase){
-        purchaseService.purchaseCocktail(purchase);
+    public void purchase(@RequestBody Integer num, @RequestParam Purchase purchase){
+        purchaseService.purchaseCocktail(num, purchase);
     }
 
     @GetMapping("/all")

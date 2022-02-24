@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
@@ -26,6 +28,9 @@ dependencies {
     implementation 'cglib:cglib:3.3.0'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.springframework:spring-test:5.2.6.RELEASE'
 }
 
 test {

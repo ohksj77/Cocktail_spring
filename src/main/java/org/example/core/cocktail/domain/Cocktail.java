@@ -3,11 +3,12 @@ package org.example.core.cocktail.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Cocktail {
 
@@ -16,9 +17,8 @@ public class Cocktail {
     private Long id;
     private String cocktail;
 
-    @ManyToOne
-    @JoinColumn(name = "cocktail_ingr")
-    private Ingredient ingredient;
+    @OneToMany(mappedBy="ingredient")
+    private List<CocktailIngredient> ingredient;
     private Integer price;
     private Integer proof;
 }
