@@ -59,4 +59,9 @@ public class CocktailServiceImpl implements CocktailService {
     public List<Cocktail> searchAll() {
         return cocktailRepository.findAll();
     }
+
+    @Override
+    public Cocktail searchId(String name) {
+        return cocktailRepository.findByName(name);
+    }
 }

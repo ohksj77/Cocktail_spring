@@ -14,4 +14,5 @@ public interface CocktailService {
     Cocktail searchByName(String name);
     void deleteAllCocktail();
     List<Cocktail> searchAll();
+    Cocktail searchId(String name);
 }

@@ -1,14 +1,15 @@
 package org.example.api;
 
 import org.example.core.cocktail.domain.*;
-import org.example.core.cocktail.service.CocktailIngredientService;
-import org.example.core.cocktail.service.impl.CocktailIngredientServiceImpl;
+import org.example.core.cocktail.service.OrderService;
 import org.example.core.cocktail.service.CocktailService;
 import org.example.core.cocktail.service.IngredientService;
 import org.example.core.cocktail.service.PurchaseService;
 import org.example.core.cocktail.service.impl.CocktailServiceImpl;
 import org.example.core.cocktail.service.impl.IngredientServiceImpl;
+import org.example.core.cocktail.service.impl.OrderServiceImpl;
 import org.example.core.cocktail.service.impl.PurchaseServiceImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -16,21 +17,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 class CocktailControllerTest {
     private ApplicationContext context;
     private PurchaseService purchaseService;
     private CocktailService cocktailService;
     private IngredientService ingredientService;
-    private CocktailIngredientService cocktailIngredientService;
+    private OrderService orderService;
     private Purchase purchase;
     private Cocktail cocktail;
     private Ingredient ingredient;
     private CocktailIngredient cocktailIngredient;
-    private List<CocktailIngredient> cocktailList;
+    private CocktailPurchase cocktailPurchase;
+    private List<Cocktail> cocktailList;
+    private List<Ingredient> ingredientList;
+    private List<Purchase> purchaseList;
+    private List<CocktailIngredient>  cocktailIngredientList;
 
     @BeforeEach
     public void setUp() {
@@ -38,18 +41,18 @@ class CocktailControllerTest {
         purchaseService = context.getBean("purchaseServiceImpl", PurchaseServiceImpl.class);
         cocktailService = context.getBean("cocktailServiceImpl", CocktailServiceImpl.class);
         ingredientService = context.getBean("ingredientServiceImpl", IngredientServiceImpl.class);
-        cocktailIngredientService = context.getBean("cocktailIngredientServiceImpl", CocktailIngredientServiceImpl.class);
-        ingredient = new Ingredient();
-        ingredient.setId(8L);
-        ingredient.setNumber(3);
-        cocktail = new Cocktail();
-        cocktail.setPrice(5000);
-        cocktail.setCocktail("Yummy10w01000121"); // 이름 바꾸지 않으면 테스트 통과 안된다.....
-        cocktailIngredient = new CocktailIngredient(8L, ingredient, cocktail);
-        cocktailList = new ArrayList<CocktailIngredient>();
-        cocktailList.add(cocktailIngredient);
-        cocktail.setIngredient(cocktailList);
-        purchase = new Purchase(2L, 10000 ,LocalDateTime.now().withNano(0), PurchaseMethod.CASH, cocktail);
+        orderService = context.getBean("orderServiceImpl", OrderServiceImpl.class);
+
+        purchaseService.deleteAllRecord();
+        cocktailService.deleteAllCocktail();
+        ingredientService.deleteAllIngredient();
+
+        ingredient = new Ingredient(8L, "lemon", 3, 1000);
+        cocktail = new Cocktail(8L, "midorishower", 5000, 17.5);
+        purchase = new Purchase(254L, 10000 ,LocalDateTime.now().withNano(0), PurchaseMethod.CASH);
+
+        cocktailPurchase = new CocktailPurchase(1L, purchase, cocktail);
+        cocktailIngredient = new CocktailIngredient(1L, ingredient, cocktail);
     }
 
     @Test // 칵테일 추가
@@ -59,18 +62,21 @@ class CocktailControllerTest {
 
     @Test // 결제 및 어떤 칵테일이 판매되었는지 조회
     public void purchase() {
+        Map<Long, Integer> money = new HashMap<>();
         cocktailService.addCocktail(cocktail);
-        cocktail.setId((cocktailService.searchByName(cocktail.getCocktail())).getId());
-        purchaseService.purchaseCocktail(2, purchase);
-        Cocktail cocktail1 = purchase.getCocktail();
-        List<CocktailIngredient> ingredientList = cocktail1.getIngredient();
-        for (CocktailIngredient ingredient : ingredientList) {
-            ingredient.getIngredient().setNumber(ingredient.getIngredient().getNumber() - 1);
-            ingredientService.modifyIngredient(ingredient.getId(), ingredient.getIngredient());
+        money.put(cocktailService.searchByName(cocktail.getName()).getId() + 1L, 2);
+        orderService.purchaseCocktail(money, purchase);
+        cocktailPurchase.getPurchase().setId(purchaseService.searchByMethod(PurchaseMethod.CASH).get(0).getId());
+        ingredientList.addAll(orderService.searchIngredient(cocktail));
+        for (Ingredient ingredient : ingredientList) {
+            ingredient.setNumber(ingredient.getNumber() - 1);
+            ingredientService.modifyIngredient(ingredient.getId(), ingredient);
         }
         //판매된 칵테일 종류 조회
-        Cocktail ct = purchaseService.searchWhich(purchase);
-        System.out.println("Cocktail = " + ct.getCocktail());
+        List<Cocktail> ct = orderService.searchWhich(purchase); //왜 1을 더해야할까?
+        for (Cocktail cocktail : ct) {
+            System.out.println("cocktail = " + cocktail.getName());
+        }
     }
 
     @Test // 결제조회 시간별
@@ -107,12 +113,7 @@ class CocktailControllerTest {
 
     @Test // 칵테일 하나와 해당 재료 삭제
     public void deleteOneCocktail(){
-        cocktailService.deleteAllByName(cocktail.getCocktail());
-    }
-
-    @Test // 재료와 칵테일 전체 삭제
-    public void deleteAllCocktail(){
-        cocktailService.deleteAllCocktail();
+        cocktailService.deleteAllByName(cocktail.getName());
     }
 
     @Test // 칵테일 하나 조회
@@ -162,5 +163,50 @@ class CocktailControllerTest {
     @Test // 결제 내역 모두 다 삭제
     public void deletePurchaseRecord(){
         purchaseService.deleteAllRecord();
+    }
+
+    @Test // 재료와 칵테일 전체 삭제
+    public void deleteAllCocktail(){
+        cocktailService.deleteAllCocktail();
+    }
+
+    @Test // 요일별 통계
+    public void statisticsByDay(){
+        Map<Integer, Integer> data = purchaseService.statByDay();
+        for(int i = 0; i < data.size(); i++){
+            System.out.println(i + " : " + data.get(i));
+        }
+    }
+
+    @Test // 시간별 통계
+    public void statisticsByTime(){
+        Map<Integer, Integer> data = purchaseService.statByTime();
+        for(int i = 0; i < data.size(); i++){
+            System.out.println(i + " : " + data.get(i));
+        }
+    }
+
+    @Test // 월별 통계
+    public void statisticsByMonth(){
+        Map<Integer, Integer> data = purchaseService.statByMonth();
+        for(int i = 0; i < data.size(); i++){
+            System.out.println(i + " : " + data.get(i));
+        }
+    }
+
+    @Test // 월별 판매 개수
+    public void howManySaleByMonth(){
+        Map<Integer, Integer> data = purchaseService.howManyPurchase();
+        for (Integer i : data.keySet()) {
+            System.out.println(i + " : " + data.get(i));
+        }
+    }
+
+    @Test
+    public void gainByWeek(){
+        Map<Integer, Integer> data = orderService.gainByWeek();
+        for (Integer i : data.keySet()) {
+            System.out.println(i + " : " + data.get(i));
+        }
     }
 }

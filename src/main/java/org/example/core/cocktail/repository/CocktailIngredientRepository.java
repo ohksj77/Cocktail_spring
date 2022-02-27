@@ -7,16 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 
 @Repository
 public interface CocktailIngredientRepository extends JpaRepository<CocktailIngredient, Long> {
+    @Query("SELECT u.cocktail FROM CocktailIngredient u")
+    List<Cocktail> findCocktail();
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE CocktailIngredient u SET u.cocktail = ?2, u.ingredient = ?3 WHERE u.id = ?1")
-    void updateCoIn(Long id, Cocktail cocktail, Ingredient ingredient);
-
-    @Query(value = "INSERT INTO CocktailIngredient u(u.cocktail, u.ingredient) VALUES(?1, ?2)", nativeQuery = true)
-    void saveOne(Cocktail cocktail, Ingredient ingredient);
+    @Query("SELECT u.ingredient FROM CocktailIngredient u where u.cocktail = ?1")
+    List<Ingredient> findIngredient(Cocktail cocktail);
 }

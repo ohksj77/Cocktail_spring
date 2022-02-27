@@ -1,11 +1,13 @@
 package org.example.core.cocktail.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.*;
 
 import javax.persistence.*;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -21,8 +23,4 @@ public class Purchase {
 
     @Enumerated(EnumType.STRING)
     private PurchaseMethod method;
-
-    @ManyToOne
-    @JoinColumn(name = "cocktail_type")
-    private Cocktail cocktail;
 }

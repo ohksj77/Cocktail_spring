@@ -2,12 +2,10 @@ package org.example.core.cocktail.domain;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -21,7 +19,4 @@ public class Ingredient {
     private String name;
     private Integer number;
     private Integer price;
-
-    @OneToMany(mappedBy="cocktail")
-    private List<CocktailIngredient> cocktail;
 }

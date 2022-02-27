@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,10 +16,9 @@ public class Cocktail {
     @Id
     @GeneratedValue
     private Long id;
-    private String cocktail;
 
-    @OneToMany(mappedBy="ingredient")
-    private List<CocktailIngredient> ingredient;
+    @Column(nullable = false)
+    private String name;
     private Integer price;
-    private Integer proof;
+    private Double proof;
 }

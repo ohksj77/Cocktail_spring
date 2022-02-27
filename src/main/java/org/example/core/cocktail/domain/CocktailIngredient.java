@@ -19,10 +19,10 @@ public class CocktailIngredient {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "ingredient_id")
+    @JoinColumn(name = "ingredient_id", nullable = false)
     private Ingredient ingredient;
 
     @ManyToOne
-    @JoinColumn(name = "Cocktail_id")
+    @JoinColumn(name = "cocktail_id", nullable = false)
     private Cocktail cocktail;
 }

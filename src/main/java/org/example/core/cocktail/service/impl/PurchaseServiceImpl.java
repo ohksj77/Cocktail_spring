@@ -1,9 +1,6 @@
 package org.example.core.cocktail.service.impl;
 
-import org.example.core.cocktail.domain.Cocktail;
-import org.example.core.cocktail.domain.CocktailIngredient;
-import org.example.core.cocktail.domain.Ingredient;
-import org.example.core.cocktail.domain.Purchase;
+import org.example.core.cocktail.domain.*;
 import org.example.core.cocktail.repository.PurchaseRepository;
 import org.example.core.cocktail.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class PurchaseServiceImpl implements PurchaseService {
@@ -24,29 +25,13 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public void purchaseCocktail(Integer num, Purchase purchase) {
-        Cocktail cocktail = purchase.getCocktail();
-        if(num * cocktail.getPrice() != purchase.getAmount()){
-            throw new RuntimeException();
-        }
-        List<CocktailIngredient> ingredientList = cocktail.getIngredient();
-        for (CocktailIngredient ingredient : ingredientList) {
-            if(ingredient.getIngredient().getNumber() < 1){
-                throw new RuntimeException();
-            }
-        }
-        purchase.setAmount(num * cocktail.getPrice());
-        purchaseRepository.save(purchase);
-    }
-
-    @Override
     public List<Purchase> searchAll() {
         return purchaseRepository.findAll();
     }
 
     @Override
     public List<Purchase> searchByTime(LocalDateTime time) {
-        return purchaseRepository.searchByTime(time, time.plusHours(1));
+        return purchaseRepository.searchByDate(time, time.plusHours(1));
     }
 
     @Override
@@ -60,12 +45,48 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public List<Purchase> searchByMethod(PurchaseMethod method) {
+        return purchaseRepository.findByMethod(method);
+    }
+
+    @Override
     public void deleteAllRecord() {
         purchaseRepository.deleteAll();
     }
 
     @Override
-    public Cocktail searchWhich(Purchase purchase) {
-        return purchaseRepository.whichCocktail(purchase.getId()).get();
+    public Map<Integer, Integer> statByDay() {
+        Map<Integer, List<Purchase>> stat = searchAll().stream().collect((Collectors.groupingBy(p -> p.getTime().getDayOfYear())));
+        return ascSale(stat);
+    }
+
+    @Override
+    public Map<Integer, Integer> statByTime() {
+        Map<Integer, List<Purchase>> stat = searchAll().stream().collect((Collectors.groupingBy(p -> p.getTime().getHour())));
+        return ascSale(stat);
+    }
+
+    @Override
+    public Map<Integer, Integer> statByMonth() {
+        Map<Integer, List<Purchase>> stat = searchAll().stream().collect((Collectors.groupingBy(p -> p.getTime().getMonthValue())));
+        return ascSale(stat);
+    }
+
+    @Override
+    public Map<Integer, Integer> howManyPurchase() {
+        Map<Integer, List<Purchase>> stat = searchAll().stream().collect((Collectors.groupingBy(p -> p.getTime().getMonthValue())));
+        Map<Integer, Integer> result = new HashMap<>();
+        for (Integer i : stat.keySet()) {
+            result.put(i, stat.get(i).size());
+        }
+        return result;
+    }
+
+    public Map<Integer, Integer> ascSale(Map<Integer, List<Purchase>> stat) {
+        Map<Integer, Integer> result = new HashMap();
+        for (Integer i : stat.keySet()) {
+            result.put(i, stat.get(i).stream().map(Purchase::getAmount).reduce(Integer::sum).orElse(0));
+        }
+        return result;
     }
 }

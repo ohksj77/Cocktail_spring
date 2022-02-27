@@ -16,13 +16,13 @@ public interface CocktailRepository extends JpaRepository<Cocktail, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Cocktail u SET u.price = ?2, u.proof = ?3 WHERE u.id = ?1")
-    void updateCocktail(Long id, Integer price, Integer proof);
+    void updateCocktail(Long id, Integer price, Double proof);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Cocktail u WHERE u.cocktail = ?1")
+    @Query("DELETE FROM Cocktail u WHERE u.name = ?1")
     void deleteByName(String name);
 
-    @Query("SELECT u FROM Cocktail u WHERE u.cocktail = ?1")
-    Object findByName(String name);
+    @Query("SELECT u FROM Cocktail u WHERE u.name = ?1")
+    Cocktail findByName(String name);
 }
