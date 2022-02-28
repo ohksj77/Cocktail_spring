@@ -72,8 +72,9 @@ class CocktailControllerTest {
             ingredient.setNumber(ingredient.getNumber() - 1);
             ingredientService.modifyIngredient(ingredient.getId(), ingredient);
         }
+        
         //판매된 칵테일 종류 조회
-        List<Cocktail> ct = orderService.searchWhich(purchase); //왜 1을 더해야할까?
+        List<Cocktail> ct = orderService.searchWhich(purchase);
         for (Cocktail cocktail : ct) {
             System.out.println("cocktail = " + cocktail.getName());
         }
@@ -202,7 +203,7 @@ class CocktailControllerTest {
         }
     }
 
-    @Test
+    @Test // 일주일단위 순이익
     public void gainByWeek(){
         Map<Integer, Integer> data = orderService.gainByWeek();
         for (Integer i : data.keySet()) {

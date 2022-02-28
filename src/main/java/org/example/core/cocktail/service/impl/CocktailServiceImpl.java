@@ -47,7 +47,7 @@ public class CocktailServiceImpl implements CocktailService {
 
     @Override
     public Cocktail searchByName(String name) {
-        return (Cocktail)cocktailRepository.findByName(name);
+        return cocktailRepository.findByName(name);
     }
 
     @Override

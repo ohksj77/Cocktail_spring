@@ -31,18 +31,16 @@ public class OrderServiceImpl implements OrderService {
         List<Cocktail> cp = cocktailPurchaseRepository.findWhichCocktail(purchase);
         List<Ingredient> ingredientList = new ArrayList<>();
         int sum = 0;
-        int i = 0;
-        for (Cocktail cocktail : cp){
-            sum += money.get(cocktail.getId()) * cocktail.getPrice();
-            ingredientList.addAll(cocktailIngredientRepository.findIngredient(cocktail));
-        }
-        if(sum != purchase.getAmount())
-            throw new RuntimeException();
         for (Cocktail cocktail : cp)
             ingredientList.addAll(cocktailIngredientRepository.findIngredient(cocktail));
         for (Ingredient ingredient : ingredientList)
             if(ingredient.getNumber() < 1)
                 throw new RuntimeException();
+        for (Cocktail cocktail : cp){
+            sum += money.get(cocktail.getId()) * cocktail.getPrice();
+        }
+        if(sum != purchase.getAmount())
+            throw new RuntimeException();
         purchase.setAmount(sum);
         purchase.setTime(LocalDateTime.now());
         for (Cocktail cocktail : cp) {
