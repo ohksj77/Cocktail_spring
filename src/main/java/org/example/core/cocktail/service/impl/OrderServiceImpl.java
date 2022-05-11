@@ -5,7 +5,7 @@ import org.example.core.cocktail.repository.CocktailIngredientRepository;
 import org.example.core.cocktail.repository.CocktailPurchaseRepository;
 import org.example.core.cocktail.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class OrderServiceImpl implements OrderService {
 
     private final CocktailPurchaseRepository cocktailPurchaseRepository;

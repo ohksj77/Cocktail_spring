@@ -9,7 +9,6 @@ import org.example.core.cocktail.service.impl.CocktailServiceImpl;
 import org.example.core.cocktail.service.impl.IngredientServiceImpl;
 import org.example.core.cocktail.service.impl.OrderServiceImpl;
 import org.example.core.cocktail.service.impl.PurchaseServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;

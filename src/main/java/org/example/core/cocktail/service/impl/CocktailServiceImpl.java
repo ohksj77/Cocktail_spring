@@ -4,12 +4,12 @@ import org.example.core.cocktail.domain.Cocktail;
 import org.example.core.cocktail.repository.CocktailRepository;
 import org.example.core.cocktail.service.CocktailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class CocktailServiceImpl implements CocktailService {
 
     private final CocktailRepository cocktailRepository;
